@@ -1,8 +1,9 @@
-from model.conexao_model import connection
+from model.conexao_model import Database
 
 class ReceitaModel:
     def cadastrar(id_usuario, nome, tempo, ingredientes, modo):
-        conn = connection()
+        db = Database
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO receitas (id_usuario, nome, tempo_preparo, ingredientes, modo_preparo)
@@ -12,7 +13,8 @@ class ReceitaModel:
         conn.close()
 
     def listar():
-        conn = connection()
+        db = Database
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT id_receita, nome FROM receitas")
         receitas = cursor.fetchall()
@@ -20,7 +22,8 @@ class ReceitaModel:
         return receitas
 
     def buscar_por_id(id_receita):
-        conn = connection()
+        db = Database
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT nome, tempo_preparo, ingredientes, modo_preparo FROM receitas WHERE id_receita=%s", (id_receita,))
         dados = cursor.fetchone()
@@ -28,7 +31,8 @@ class ReceitaModel:
         return dados
     
     def cadastrar(id_usuario, nome, tempo, ingredientes, modo, categoria, dificuldade, link_imagem=None, link_video=None):
-        conn = connection()
+        db = Database
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO receitas (id_usuario, nome, tempo_preparo, ingredientes, modo_preparo, categoria, dificuldade, link_imagem, link_video)
@@ -38,7 +42,8 @@ class ReceitaModel:
         conn.close()
 
     def buscar_por_id(id_receita):
-        conn = connection()
+        db = Database
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("""
             SELECT nome, tempo_preparo, ingredientes, modo_preparo, categoria, dificuldade, link_imagem, link_video

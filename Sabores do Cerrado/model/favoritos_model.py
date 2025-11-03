@@ -1,8 +1,9 @@
-from model.conexao_model import connection
+from model.conexao_model import Database
 
 class FavoritosModel:
     def adicionar(id_usuario, id_receita):
-        conn = connection()
+        db = Database
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM receitas_favoritas WHERE id_usuario=%s AND id_receita=%s", (id_usuario, id_receita))
         if cursor.fetchone():

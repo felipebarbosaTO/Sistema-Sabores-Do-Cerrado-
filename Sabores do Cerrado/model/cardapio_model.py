@@ -1,10 +1,11 @@
-from model.conexao_model import connection
+from conexao_model import Database
 from datetime import date
 import random
 
 class CardapioModel:
     def gerar():
-        conn = connection()
+        db = Database
+        conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("DELETE FROM cardapio WHERE data_cardapio=%s", (date.today(),))
         cursor.execute("SELECT id_receita FROM receitas")

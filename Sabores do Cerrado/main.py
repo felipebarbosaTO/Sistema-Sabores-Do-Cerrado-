@@ -1,7 +1,7 @@
 import tkinter as Tk
-from view.login_view import PrincipalView
+from view.login_view import LoginView
 
 if __name__ == "__main__":
     root = Tk()
-    app = PrincipalView(root)
+    app = LoginView(root)
     root.mainloop()
