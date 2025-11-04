@@ -1,7 +1,8 @@
-import tkinter as Tk
-from view.login_view import LoginView
+from tkinter import Tk
+from view.login_principal_view import Application
 
 if __name__ == "__main__":
     root = Tk()
-    app = LoginView(root)
+    app = Application(root)
+    print("teste")
     root.mainloop()

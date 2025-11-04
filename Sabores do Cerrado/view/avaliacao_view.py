@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from controller.receita_controller import ReceitaController
 
 class AvaliacaoView:
-    def _init_(self, id_usuario, id_receita, receita_dados):
+    def __init__(self, id_usuario, id_receita, receita_dados):
         self.controller = ReceitaController()
         self.id_usuario = id_usuario
         self.id_receita = id_receita
