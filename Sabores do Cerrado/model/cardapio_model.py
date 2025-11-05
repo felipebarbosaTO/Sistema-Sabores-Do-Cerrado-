@@ -1,4 +1,4 @@
-from conexao_model import Database
+from model.conexao_model import Database
 from datetime import date
 import random
 

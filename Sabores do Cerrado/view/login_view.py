@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import messagebox
 from controller.receita_controller import ReceitaController
 from view.avaliacao_view import AvaliacaoView
 
