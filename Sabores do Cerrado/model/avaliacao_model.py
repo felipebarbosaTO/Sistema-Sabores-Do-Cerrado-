@@ -1,4 +1,4 @@
-from conexao_model import Database
+from model.conexao_model import Database
 
 class AvaliacaoModel:
     def registrar(id_usuario, id_receita, nota, comentario):

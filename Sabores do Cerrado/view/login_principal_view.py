@@ -1,27 +1,14 @@
 import tkinter as tk
-import mysql.connector
-from mysql.connector import Error
 from tkinter import messagebox
-from login_principal_view import PrincipalView
-from login_view import LoginView
-
-
-def get_connection():
-        try:
-            connection = mysql.connector.connect(
-                host= 'localhost',
-                database= 'Lista_receitas',
-                user= 'root',
-                password= 'turma@283'
-            )
-            return connection
-        except Error as e:
-            print(f"Erro ao connection ao MySQL: {e}")
-            return None
-        
+from controller.receita_controller import ReceitaController
+from view.principal_view import PrincipalView
+from view.login_view import LoginView
 
 class Application:
     def __init__(self, master=None):
+        self.master = master  
+        self.controller = ReceitaController()
+
         self.fontePadrao = ("Arial", 10, "bold")
         master.title("Login - Sistema Sabores do Cerrado")
         master.geometry("360x250")
@@ -42,37 +29,24 @@ class Application:
             text="Autenticar",
             font=("Calibri", 9, "bold"),
             width=12,
-            command=self.verificaSenha
+            command=self.verificaSenha,
         )
         self.botao.grid(row=3, column=0, columnspan=2, pady=15)
 
-
         self.mensagem = tk.Label(master, text="", font=self.fontePadrao)
         self.mensagem.grid(row=4, column=0, columnspan=2)
-
 
     def verificaSenha(self):
         usuario = self.nome.get().strip()
         senha = self.senha.get().strip()
 
         if usuario == "" or senha == "":
-           messagebox.showwarning("Aviso", "Preencha todos os campos!")   
-           return
-
-        conexao = get_connection()
-        if not conexao:
+            messagebox.showwarning("Aviso", "Preencha todos os campos!")   
             return
 
-        cursor = conexao.cursor(dictionary=True)
+        dados = self.controller.autenticar_usuario(usuario, senha)
 
-        try:
-            cursor.execute(
-                "SELECT nome, tipo_usuario FROM usuario WHERE nome=%s AND senha=%s",
-                (usuario, senha)
-            )
-            dados = cursor.fetchone()
-
-            if dados:
+        if dados:
                 tipo = dados["tipo_usuario"]
                 id_usuario = dados["id_usuario"]
                 nome = dados["nome"]
@@ -87,15 +61,12 @@ class Application:
                     PrincipalView(id_usuario, nome)
                 else:
                     LoginView(id_usuario, nome)
-            else:
+        else:
                 self.mensagem["fg"] = "red"
                 self.mensagem["text"] = "Usuário ou senha inválidos!"
                 messagebox.showerror("Erro", "Credenciais incorretas!")
-        except mysql.connector.Error as erro:
-            messagebox.showerror("Erro SQL", f"Erro ao executar consulta: {erro}")
-        finally:
-            cursor.close()
-            conexao.close()
+        
+
 
 if __name__ == "__main__":
     root = tk.Tk()

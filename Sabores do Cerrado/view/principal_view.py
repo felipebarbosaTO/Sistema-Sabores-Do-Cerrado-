@@ -53,9 +53,9 @@ class PrincipalView:
         self.lista = tk.Listbox(frame, width=40, height=8)
         self.lista.grid(row=5, column=1, pady=10)
 
-        tk.Button(frame, text="Cadastrar Receita", bg="#4CAF50", fg="white", command=self.cadastrar).grid(row=6, column=0, columnspan=2, pady=5)
-        tk.Button(frame, text="Ver Receita", bg="#2196F3", fg="white", command=self.ver_receita).grid(row=7, column=0, columnspan=2, pady=5)
-        tk.Button(frame, text="Gerar Cardápio", bg="#9C27B0", fg="white", command=self.cardapio).grid(row=8, column=0, columnspan=2, pady=5)
+        tk.Button(frame, text="Cadastrar Receita", bg="#4CAF50", fg="white", command=self.cadastrar).grid(row=10, column=0, columnspan=2, pady=5)
+        tk.Button(frame, text="Ver Receita", bg="#2196F3", fg="white", command=self.ver_receita).grid(row=11, column=0, columnspan=2, pady=5)
+        tk.Button(frame, text="Gerar Cardápio", bg="#9C27B0", fg="white", command=self.cardapio).grid(row=12, column=0, columnspan=2, pady=5)
 
         self.atualizar_lista()
         self.janela.mainloop()

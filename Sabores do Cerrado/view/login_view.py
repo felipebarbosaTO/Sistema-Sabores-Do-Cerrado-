@@ -18,28 +18,12 @@ class LoginView:
 
         tk.Label(frame, text=f"Bem-vindo, {nome}!", font=("Arial", 16, "bold"), bg="white").grid(row=0, column=0, columnspan=2, pady=10)
 
-        tk.Label(frame, text="Nome da Receita:", bg="white").grid(row=1, column=0)
-        self.nome_r = tk.Entry(frame, width=35)
-        self.nome_r.grid(row=1, column=1)
-
-        tk.Label(frame, text="Tempo de Preparo:", bg="white").grid(row=2, column=0)
-        self.tempo_r = tk.Entry(frame, width=35)
-        self.tempo_r.grid(row=2, column=1)
-
-        tk.Label(frame, text="Ingredientes:", bg="white").grid(row=3, column=0)
-        self.ingr_r = tk.Text(frame, width=30, height=5)
-        self.ingr_r.grid(row=3, column=1)
-
-        tk.Label(frame, text="Modo de Preparo:", bg="white").grid(row=4, column=0)
-        self.modo_r = tk.Text(frame, width=30, height=5)
-        self.modo_r.grid(row=4, column=1)
-
+        tk.Label(frame, text="Lista Receitas:", bg="white").grid(row=1, column=0, pady=5)
         self.lista = tk.Listbox(frame, width=40, height=8)
-        self.lista.grid(row=5, column=1, pady=10)
+        self.lista.grid(row=1, column=1, pady=5)
 
-        tk.Button(frame, text="Cadastrar Receita", bg="#4CAF50", fg="white", command=self.cadastrar).grid(row=6, column=0, columnspan=2, pady=5)
-        tk.Button(frame, text="Ver Receita", bg="#2196F3", fg="white", command=self.ver_receita).grid(row=7, column=0, columnspan=2, pady=5)
-        tk.Button(frame, text="Gerar Cardápio", bg="#9C27B0", fg="white", command=self.cardapio).grid(row=8, column=0, columnspan=2, pady=5)
+        tk.Button(frame, text="Ver Receita", bg="#2196F3", fg="white", command=self.ver_receita).grid(row=2, column=0, columnspan=2, pady=5)
+        tk.Button(frame, text="Gerar Cardápio", bg="#9C27B0", fg="white", command=self.cardapio).grid(row=3, column=0, columnspan=2, pady=5)
 
         self.atualizar_lista()
         self.janela.mainloop()
@@ -48,17 +32,6 @@ class LoginView:
         self.lista.delete(0, tk.END)
         for r in self.controller.listar():
             self.lista.insert(tk.END, f"{r[0]} - {r[1]}")
-
-    def cadastrar(self):
-        self.controller.cadastrar(
-            self.id_usuario,
-            self.nome_r.get(),
-            self.tempo_r.get(),
-            self.ingr_r.get("1.0", "end-1c"),
-            self.modo_r.get("1.0", "end-1c")
-        )
-        messagebox.showinfo("Sucesso", "Receita cadastrada!")
-        self.atualizar_lista()
 
     def ver_receita(self):
         selecao = self.lista.curselection()
