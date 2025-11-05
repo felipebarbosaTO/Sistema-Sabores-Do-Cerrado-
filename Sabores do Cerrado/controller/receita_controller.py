@@ -5,15 +5,24 @@ from model.avaliacao_model import AvaliacaoModel
 from model.cardapio_model import CardapioModel
 from model.conexao_model import Database
 
+
 class ReceitaController:
 
     def autenticar_usuario(self, nome, senha):
-        db=Database()
-        query = ""
-        resultado = db.execute_query(query, (nome, senha))
-        if resultado:
-            return resultado[0]
-        return None
+        db = Database()
+        query = """
+            SELECT id_usuario, nome, tipo_usuario
+            FROM usuario
+            WHERE nome = %s AND senha = %s
+        """
+        try:
+            resultado = db.execute_query(query, (nome, senha))
+            if resultado and len(resultado) > 0:
+                return resultado[0]  
+            return None
+        except Exception as e:
+            print(f"Erro ao autenticar usuário: {e}")
+            return None
 
     def cadastrar(self, id_usuario, nome, tempo, ingredientes, modo):
         ReceitaModel.cadastrar(id_usuario, nome, tempo, ingredientes, modo)
