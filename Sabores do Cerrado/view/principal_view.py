@@ -51,7 +51,7 @@ class PrincipalView:
         self.link_video.grid(row=8, column=1)
 
         self.lista = tk.Listbox(frame, width=40, height=8)
-        self.lista.grid(row=5, column=1, pady=10)
+        self.lista.grid(row=9, column=0, columnspan=2, pady=10)
 
         tk.Button(frame, text="Cadastrar Receita", bg="#4CAF50", fg="white", command=self.cadastrar).grid(row=10, column=0, columnspan=2, pady=5)
         tk.Button(frame, text="Ver Receita", bg="#2196F3", fg="white", command=self.ver_receita).grid(row=11, column=0, columnspan=2, pady=5)
@@ -65,6 +65,7 @@ class PrincipalView:
         for r in self.controller.listar():
             self.lista.insert(tk.END, f"{r[0]} - {r[1]}")
 
+    def cadastrar(self):
         self.controller.cadastrar(
             self.id_usuario,
             self.nome_r.get(),
@@ -75,7 +76,7 @@ class PrincipalView:
             self.combo_dificuldade.get(),
             self.link_imagem.get(),
             self.link_video.get()
-)
+        )
         messagebox.showinfo("Sucesso", "Receita cadastrada!")
         self.atualizar_lista()
 
@@ -89,4 +90,7 @@ class PrincipalView:
 
     def cardapio(self):
         lista = self.controller.gerar_cardapio()
-        messagebox.showinfo("Cardápio do Dia", "\n".join(lista))
+        if lista:
+            messagebox.showinfo("Cardápio do Dia", "\n".join(lista))
+        else:
+            messagebox.showwarning("Atenção", "Nenhuma receita disponível para gerar o cardápio.")
