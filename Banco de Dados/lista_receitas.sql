@@ -197,3 +197,28 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2025-10-31 15:58:08
+
+
+--- --------------------------------------- ---
+--- Alterações importantes feitas no Banco  ---
+-- use lista_receitas;
+
+INSERT INTO usuario (nome, email, senha, tipo_usuario)
+VALUES 
+('admin', 'admin@sabores.com', '123', 'admin'),
+('joao', 'joao@email.com', 'abc', 'usuario'),
+('maria', 'maria@email.com', 'xyz', 'usuario');
+
+ALTER TABLE receita
+CHANGE dificuldade dificuldade enum('Facil', 'Medio', 'Dificil') DEFAULT NULL;
+
+INSERT INTO receita (nome, ingredientes, modo_preparo, categoria, dificuldade)
+VALUES
+('Espaguete à Bolonhesa', '500g de espaguete, 300g de carne moída, 2 dentes de alho picados, 1 cebola picada, 2 xícaras de molho de tomate', 'Cozinhe o espaguete em água e sal até ficar al dente. Refogue o alho e a cebola, adicione a carne moída e cozinhe até dourar. Acrescente o molho de tomate, sal e pimenta, e cozinhe por 15 minutos. Sirva o molho sobre o macarrão.','Massas','Facil'),
+('Frango ao Curry com Arroz', '500g de peito de frango em cubos, 1 cebola picada, 1 colher de sopa de curry, 1 lata de creme de leite, 1 colher de sopa de azeite, Sal a gosto', 'Em uma panela, aqueça o azeite e refogue a cebola. Adicione o frango e doure bem. Acrescente o curry e o sal. Quando o frango estiver cozido, adicione o creme de leite e cozinhe por mais 5 minutos. Sirva com arroz branco.', 'Prato principal','Medio'),
+('Salada Tropical', '1 alface americana picada, 1 manga em cubos, 1 cenoura ralada, 100g de peito de peru fatiado, 2 colheres de sopa de molho de iogurte', 'Em uma tigela, misture todos os ingredientes e regue com o molho de iogurte. Sirva gelada.','Saladas','Facil'),
+('Bolo de Cenoura com Cobertura de Chocolate', '3 cenouras médias picadas, 3 ovos, 2 xícaras de açúcar, 2 e 1/2 xícaras de farinha de trigo, 1 colher de sopa de fermento, 1 xícara de óleo, Cobertura: 3 colheres de chocolate em pó, 2 colheres de manteiga e 1/2 xícara de leite', 'Bata no liquidificador a cenoura, os ovos e o óleo. Em uma tigela, misture o açúcar, a farinha e o fermento, e junte com a mistura batida. Asse por 40 minutos em forno médio. Ferva os ingredientes da cobertura e despeje sobre o bolo.','Sobremesa','Medio'),
+('Pão de Queijo Mineiro', '500g de polvilho azedo, 3 ovos, 200ml de leite, 100ml de óleo, 250g de queijo minas ralado, Sal a gosto; queijo minas', 'Ferva o leite com o óleo e despeje sobre o polvilho, mexendo bem. Adicione os ovos e o queijo. Modele bolinhas e asse em forno pré-aquecido a 180°C até dourar.','Lanches','Medio');
+
+
+-- Fim das alterações importantes feitas no Banco  ---
