@@ -1,54 +1,43 @@
 from model.conexao_model import Database
 
 class ReceitaModel:
-    def cadastrar(id_usuario, nome, tempo, ingredientes, modo):
-        db = Database
+    def cadastrar(id_usuario, nome, ingredientes, modo, categoria, dificuldade, link_imagem=None, link_video=None):
+        db = Database()  
         conn = db.get_connection()
         cursor = conn.cursor()
+
         cursor.execute("""
-            INSERT INTO receitas (id_usuario, nome, tempo_preparo, ingredientes, modo_preparo)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (id_usuario, nome, tempo, ingredientes, modo))
+            INSERT INTO receita (
+                id_usuario, nome, ingredientes, modo_preparo, categoria, dificuldade, link_imagem, link_video
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (id_usuario, nome, ingredientes, modo, categoria, dificuldade, link_imagem, link_video))
+
         conn.commit()
+        cursor.close()
         conn.close()
 
     def listar():
-        db = Database
+        db = Database()  
         conn = db.get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT id_receita, nome FROM receitas")
+        cursor.execute("SELECT id_receita, nome FROM receita order by id_receita DESC")
         receitas = cursor.fetchall()
+        cursor.close()
         conn.close()
         return receitas
 
     def buscar_por_id(id_receita):
-        db = Database
+        db = Database()  
         conn = db.get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT nome, tempo_preparo, ingredientes, modo_preparo FROM receitas WHERE id_receita=%s", (id_receita,))
-        dados = cursor.fetchone()
-        conn.close()
-        return dados
-    
-    def cadastrar(id_usuario, nome, tempo, ingredientes, modo, categoria, dificuldade, link_imagem=None, link_video=None):
-        db = Database
-        conn = db.get_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True) 
         cursor.execute("""
-            INSERT INTO receitas (id_usuario, nome, tempo_preparo, ingredientes, modo_preparo, categoria, dificuldade, link_imagem, link_video)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (id_usuario, nome, tempo, ingredientes, modo, categoria, dificuldade, link_imagem, link_video))
-        conn.commit()
-        conn.close()
-
-    def buscar_por_id(id_receita):
-        db = Database
-        conn = db.get_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT nome, tempo_preparo, ingredientes, modo_preparo, categoria, dificuldade, link_imagem, link_video
-            FROM receitas WHERE id_receita=%s
+            SELECT 
+                id_receita, nome, ingredientes, modo_preparo, 
+                categoria, dificuldade, link_imagem, link_video
+            FROM receita
+            WHERE id_receita = %s
         """, (id_receita,))
         dados = cursor.fetchone()
+        cursor.close()
         conn.close()
         return dados

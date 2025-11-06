@@ -5,7 +5,7 @@ class UsuarioModel:
     def autenticar(email, senha):
         salt = bcrypt.gensalt(rounds=12) 
         senha_hash = bcrypt.hashpw(senha.encode('utf-8'), salt)
-        db = Database
+        db = Database()
         conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT id_usuario, nome, tipo_usuario FROM usuarios WHERE email=%s AND senha=%s", (email, senha_hash))
@@ -14,7 +14,7 @@ class UsuarioModel:
         return user
 
     def cadastrar(nome, email, senha, tipo_usuario="Usuário"):
-        db = Database
+        db = Database()
         conn = db.get_connection()
         cursor = conn.cursor()
         salt = bcrypt.gensalt(rounds=12) 

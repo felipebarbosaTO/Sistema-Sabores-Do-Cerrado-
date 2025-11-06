@@ -18,14 +18,15 @@ class ReceitaController:
         try:
             resultado = db.execute_query(query, (nome, senha))
             if resultado and len(resultado) > 0:
-                return resultado[0]  
+                return resultado[0]
             return None
         except Exception as e:
             print(f"Erro ao autenticar usuário: {e}")
             return None
 
-    def cadastrar(self, id_usuario, nome, tempo, ingredientes, modo):
-        ReceitaModel.cadastrar(id_usuario, nome, tempo, ingredientes, modo)
+    def cadastrar(self, id_usuario, nome, ingredientes, modo, categoria, dificuldade, link_imagem=None, link_video=None):
+
+        ReceitaModel.cadastrar(id_usuario, nome, ingredientes, modo, categoria, dificuldade, link_imagem, link_video)
 
     def listar(self):
         return ReceitaModel.listar()

@@ -2,7 +2,7 @@ from model.conexao_model import Database
 
 class AvaliacaoModel:
     def registrar(id_usuario, id_receita, nota, comentario):
-        db = Database
+        db = Database()
         conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("""

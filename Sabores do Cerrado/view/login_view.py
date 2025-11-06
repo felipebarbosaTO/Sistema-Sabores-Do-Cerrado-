@@ -10,7 +10,7 @@ class LoginView:
         self.nome = nome
 
         self.janela = tk.Tk()
-        self.janela.title("🍽️ Sistema de Receitas")
+        self.janela.title("🍽️ Sistema de Receitas - Usuário Comum")
         self.janela.geometry("900x650")
 
         frame = tk.Frame(self.janela, bg="white", bd=3, relief="ridge")
@@ -18,7 +18,7 @@ class LoginView:
 
         tk.Label(frame, text=f"Bem-vindo, {nome}!", font=("Arial", 16, "bold"), bg="white").grid(row=0, column=0, columnspan=2, pady=10)
 
-        tk.Label(frame, text="Lista Receitas:", bg="white").grid(row=1, column=0, pady=5)
+        tk.Label(frame, text="Lista de Receitas:", bg="white").grid(row=1, column=0, pady=5)
         self.lista = tk.Listbox(frame, width=40, height=8)
         self.lista.grid(row=1, column=1, pady=5)
 
