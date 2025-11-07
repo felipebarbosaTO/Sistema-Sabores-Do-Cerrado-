@@ -6,7 +6,7 @@ class AvaliacaoModel:
         conn = db.get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO avaliacoes (id_receita, id_usuario, nota, comentario)
+            INSERT INTO avaliacao (id_receita, id_usuario, nota, comentario)
             VALUES (%s, %s, %s, %s)
         """, (id_receita, id_usuario, nota, comentario))
         conn.commit()
