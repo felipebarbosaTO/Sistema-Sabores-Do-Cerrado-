@@ -7,7 +7,6 @@ from model.conexao_model import Database
 
 
 class ReceitaController:
-
     def autenticar_usuario(self, nome, senha):
         db = Database()
         query = """
@@ -24,20 +23,51 @@ class ReceitaController:
             print(f"Erro ao autenticar usuário: {e}")
             return None
 
-    def cadastrar(self, id_usuario, nome, ingredientes, modo, categoria, dificuldade, link_imagem=None, link_video=None):
-
-        ReceitaModel.cadastrar(id_usuario, nome, ingredientes, modo, categoria, dificuldade, link_imagem, link_video)
+    def cadastrar(
+        self,
+        id_usuario,
+        nome,
+        ingredientes,
+        modo,
+        categoria,
+        dificuldade,
+        link_imagem=None,
+        link_video=None
+    ):
+     
+        try:
+            ReceitaModel.cadastrar(
+                id_usuario, nome, ingredientes, modo,
+                categoria, dificuldade, link_imagem, link_video
+            )
+        except Exception as e:
+            print(f"Erro ao cadastrar receita: {e}")
 
     def listar(self):
-        return ReceitaModel.listar()
+        try:
+            return ReceitaModel.listar()
+        except Exception as e:
+            print(f"Erro ao listar receitas: {e}")
+            return []
 
     def detalhes(self, id_usuario, id_receita):
-        HistoricoModel.registrar(id_usuario, id_receita)
-        return ReceitaModel.buscar_por_id(id_receita)
+        try:
+            HistoricoModel.registrar(id_usuario, id_receita)
+            return ReceitaModel.buscar_por_id(id_receita)
+        except Exception as e:
+            print(f"Erro ao buscar detalhes da receita: {e}")
+            return None
 
     def avaliar(self, id_usuario, id_receita, nota, comentario):
-        AvaliacaoModel.registrar(id_usuario, id_receita, nota, comentario)
-        FavoritosModel.adicionar(id_usuario, id_receita)
+        try:
+            AvaliacaoModel.registrar(id_usuario, id_receita, nota, comentario)
+            FavoritosModel.adicionar(id_usuario, id_receita)
+        except Exception as e:
+            print(f"Erro ao registrar avaliação: {e}")
 
     def gerar_cardapio(self):
-        return CardapioModel.gerar()
+        try:
+            return CardapioModel.gerar()
+        except Exception as e:
+            print(f"Erro ao gerar cardápio: {e}")
+            return []
