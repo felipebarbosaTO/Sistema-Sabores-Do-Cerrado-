@@ -1,7 +1,7 @@
 from model.conexao_model import Database
 
 class ReceitaModel:
-    def cadastrar(id_usuario, nome, ingredientes, modo, categoria, dificuldade, link_imagem=None, link_video=None):
+    def cadastrar(nome, ingredientes, modo, categoria, dificuldade, link_imagem=None, link_video=None):
         db = Database()
         conn = db.get_connection()
         if not conn:
@@ -13,10 +13,9 @@ class ReceitaModel:
         try:
             cursor.execute("""
                 INSERT INTO receita (
-                    id_usuario, nome, ingredientes, modo_preparo, 
-                    categoria, dificuldade, link_imagem, link_video
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (id_usuario, nome, ingredientes, modo, categoria, dificuldade, link_imagem, link_video))
+                    nome, ingredientes, modo_preparo, link_imagem, link_video, categoria, dificuldade 
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (nome, ingredientes, modo, link_imagem, link_video, categoria, dificuldade))
             
             conn.commit()
             print(f"[OK] Receita '{nome}' cadastrada com sucesso.")

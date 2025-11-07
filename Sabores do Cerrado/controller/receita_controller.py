@@ -25,10 +25,9 @@ class ReceitaController:
 
     def cadastrar(
         self,
-        id_usuario,
         nome,
         ingredientes,
-        modo,
+        modo_preparo,
         categoria,
         dificuldade,
         link_imagem=None,
@@ -37,7 +36,7 @@ class ReceitaController:
      
         try:
             ReceitaModel.cadastrar(
-                id_usuario, nome, ingredientes, modo,
+                nome, ingredientes, modo_preparo,
                 categoria, dificuldade, link_imagem, link_video
             )
         except Exception as e:

@@ -94,7 +94,6 @@ class PrincipalView:
 
         try:
             self.controller.cadastrar(
-                self.id_usuario,
                 nome,
                 ingredientes,
                 modo,
