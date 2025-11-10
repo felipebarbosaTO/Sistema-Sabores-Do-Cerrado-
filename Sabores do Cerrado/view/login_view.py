@@ -9,73 +9,96 @@ class LoginView:
         self.id_usuario = id_usuario
         self.nome = nome
 
-        self.janela = tk.Toplevel()
-        self.janela.title("🍽️ Sabores do Cerrado - Usuário")
-        self.janela.geometry("800x600")
-        self.janela.configure(bg="#FAFAFA")
+        self.janela = tk.Tk()
+        self.janela.title("🍽️ Sistema de Receitas - Usuário Comum")
 
-        container = tk.Frame(self.janela, bg="white", bd=2, relief="ridge", padx=12, pady=12)
-        container.place(relx=0.5, rely=0.5, anchor="center")
+        # Ativa fullscreen
+        self.fullscreen = True
+        self.janela.attributes("-fullscreen", self.fullscreen)
+        self.janela.bind("<Escape>", self.toggle_fullscreen)
 
-        tk.Label(container, text=f"Bem-vindo, {self.nome}!", font=("Arial", 16, "bold"), bg="white", fg="#333").grid(row=0, column=0, columnspan=3, pady=(0,10))
+         # Fundo com Canvas redimensionável
+        self.background = tk.Canvas(self.janela, highlightthickness=0)
+        self.background.pack(fill="both", expand=True)
+        self.background.bind("<Configure>", self._on_resize)
 
-        tk.Label(container, text="Receitas disponíveis:", bg="white", font=("Arial", 12)).grid(row=1, column=0, sticky="w")
-        self.lista = tk.Listbox(container, width=45, height=12, bd=1, relief="sunken")
-        self.lista.grid(row=2, column=0, rowspan=6, padx=(0,12), pady=5)
+        frame = tk.Frame(self.background, bg="white", bd=3, relief="ridge", padx=25, pady=25)
+        frame.place(relx=0.5, rely=0.5, anchor="center")
 
-        btn_frame = tk.Frame(container, bg="white")
-        btn_frame.grid(row=2, column=1, sticky="n")
+        tk.Label(
+            frame, text=f"Bem-vindo, {nome}!", font=("Arial", 18, "bold"),
+            bg="white", fg="#333"
+        ).grid(row=0, column=0, columnspan=2, pady=10)
 
-        tk.Button(btn_frame, text="Ver Receita", bg="#2196F3", fg="white", width=18,
-                  command=self.ver_receita).pack(pady=6)
-        tk.Button(btn_frame, text="Gerar Cardápio", bg="#9C27B0", fg="white", width=18,
-                  command=self.cardapio).pack(pady=6)
-        tk.Button(btn_frame, text="Atualizar Lista", bg="#607D8B", fg="white", width=18,
-                  command=self.atualizar_lista).pack(pady=6)
-        tk.Button(btn_frame, text="Fechar", bg="#B00020", fg="white", width=18,
-                  command=self.janela.destroy).pack(pady=6)
+        tk.Label(frame, text="Lista de Receitas:", bg="white", font=("Arial", 12)).grid(row=1, column=0, pady=5)
+        self.lista = tk.Listbox(frame, width=45, height=10, font=("Arial", 10))
+        self.lista.grid(row=1, column=1, pady=5)
 
-        self.status = tk.Label(container, text="", bg="white", font=("Arial", 10))
-        self.status.grid(row=8, column=0, columnspan=2, pady=(10,0))
+        self._criar_botao(frame, "Ver Receita", "#2196F3", self.ver_receita, 2)
+        self._criar_botao(frame, "Gerar Cardápio", "#9C27B0", self.cardapio, 3)
 
         self.atualizar_lista()
+        self.janela.mainloop()
+
+    def _criar_botao(self, parent, texto, cor, comando, linha):
+        btn = tk.Button(
+            parent, text=texto, bg=cor, fg="white",
+            font=("Arial", 11, "bold"), relief="flat",
+            command=comando, width=20, height=1
+        )
+        btn.grid(row=linha, column=0, columnspan=2, pady=6)
+        btn.bind("<Enter>", lambda e: btn.config(bg=self._escurecer(cor)))
+        btn.bind("<Leave>", lambda e: btn.config(bg=cor))
+
+    def _escurecer(self, cor):
+        cor = cor.lstrip("#")
+        r, g, b = tuple(int(cor[i:i+2], 16) for i in (0, 2, 4))
+        return f"#{max(r-30,0):02x}{max(g-30,0):02x}{max(b-30,0):02x}"
+
+    def _on_resize(self, event):
+        w = event.width
+        h = event.height
+        self.background.delete("__gradient__")
+        self._draw_gradient(w, h, "#FFFAF0", "#FFE4B5")
+
+    def _draw_gradient(self, width, height, color1, color2):
+        try:
+            r1, g1, b1 = [v >> 8 for v in self.janela.winfo_rgb(color1)]
+            r2, g2, b2 = [v >> 8 for v in self.janela.winfo_rgb(color2)]
+            for i in range(height):
+                ratio = i / max(height - 1, 1)
+                r = int(r1 + (r2 - r1) * ratio)
+                g = int(g1 + (g2 - g1) * ratio)
+                b = int(b1 + (b2 - b1) * ratio)
+                color = f"#{r:02x}{g:02x}{b:02x}"
+                self.background.create_line(0, i, width, i, fill=color, tags="__gradient__")
+        except Exception:
+            self.background.create_rectangle(0, 0, width, height, fill=color1, outline="", tags="__gradient__")
+            self.background.create_line(0, i, 900, i, fill=f"#{r:02x}{g:02x}{b:02x}")
 
     def atualizar_lista(self):
         self.lista.delete(0, tk.END)
-        try:
-            receitas = self.controller.listar() or []
-            for r in receitas:
-                if isinstance(r, (list, tuple)) and len(r) >= 2:
-                    self.lista.insert(tk.END, f"{r[0]} - {r[1]}")
-            self.status.config(text=f"Receitas carregadas: {self.lista.size()}", fg="#333")
-        except Exception as e:
-            self.status.config(text=f"Erro ao listar receitas: {e}", fg="red")
+        for r in self.controller.listar():
+            self.lista.insert(tk.END, f"{r[0]} - {r[1]}")
 
     def ver_receita(self):
         selecao = self.lista.curselection()
         if not selecao:
-            messagebox.showwarning("Atenção", "Selecione uma receita antes de visualizar.")
+            messagebox.showwarning("Aviso", "Selecione uma receita.")
             return
-
-        try:
-            id_receita = int(self.lista.get(selecao[0]).split(" - ")[0])
-        except Exception:
-            messagebox.showerror("Erro", "Seleção inválida.")
-            return
-
+        id_receita = int(self.lista.get(selecao[0]).split(" - ")[0])
         dados = self.controller.detalhes(self.id_usuario, id_receita)
-        if not dados:
-            messagebox.showerror("Erro", "Não foi possível carregar os detalhes da receita.")
-            return
-
         AvaliacaoView(self.id_usuario, id_receita, dados)
 
     def cardapio(self):
-        try:
-            lista = self.controller.gerar_cardapio()
-            if not lista:
-                messagebox.showinfo("Cardápio do Dia", "Nenhum item encontrado para o cardápio.")
-                return
-            messagebox.showinfo("Cardápio do Dia", "\n".join(lista))
-        except Exception as e:
-            messagebox.showerror("Erro", f"Falha ao gerar cardápio: {e}")
+        lista = self.controller.gerar_cardapio()
+        messagebox.showinfo("Cardápio do Dia", "\n".join(lista))
+
+    def toggle_fullscreen(self, event=None):
+        self.fullscreen = not self.fullscreen
+        if self.fullscreen:
+            self.janela.attributes("-fullscreen", True)
+        else:
+            self.janela.attributes("-fullscreen", False)
+            self.janela.geometry("900x650")
+            self.janela.update_idletasks()

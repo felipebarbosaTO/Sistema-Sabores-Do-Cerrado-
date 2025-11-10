@@ -1,83 +1,142 @@
 import tkinter as tk
 from tkinter import messagebox
-import webbrowser
+import webbrowser 
 from controller.receita_controller import ReceitaController
 
 
 class AvaliacaoView:
+    janela_aberta = None  # Impede abrir mais de uma janela
+
     def __init__(self, id_usuario, id_receita, dados):
+        # Impedir abrir múltiplas janelas
+        if AvaliacaoView.janela_aberta:
+            messagebox.showinfo("Aviso", "Feche a receita atual antes de abrir outra.")
+            return
+
         self.controller = ReceitaController()
         self.id_usuario = id_usuario
         self.id_receita = id_receita
-        self.dados = dados or {}
+        self.dados = dados
 
         self.janela = tk.Toplevel()
-        self.janela.title(f"🍽️ Detalhes da Receita - {self.dados.get('nome', 'Sem Nome')}")
-        self.janela.geometry("700x650")
-        self.janela.configure(bg="#FAFAFA")
+        AvaliacaoView.janela_aberta = self.janela
+        self.janela.title(f"🍽️ Receita - {dados['nome']}")
+        self.janela.geometry("750x650")
+        self.janela.resizable(False, False)
 
-        frame = tk.Frame(self.janela, bg="white", bd=3, relief="ridge", padx=15, pady=15)
-        frame.pack(padx=20, pady=20, fill="both", expand=True)
+        # Criar canvas para gradiente
+        self.canvas = tk.Canvas(self.janela, width=750, height=650, highlightthickness=0)
+        self.canvas.pack(fill="both", expand=True)
+        self.criar_gradiente(self.canvas, "#FFA726", "#FFF8E1") 
 
-        tk.Label(frame, text=self.dados.get("nome", "Receita sem nome"),
-                 font=("Arial", 20, "bold"), bg="white", fg="#333").pack(pady=(5, 10))
+        frame = tk.Frame(self.canvas, bg="white", bd=2, relief="solid")
+        frame.place(relx=0.5, rely=0.5, anchor="center", width=680, height=580)
 
-        tk.Label(frame, text=f"Categoria: {self.dados.get('categoria', 'Não informada')}",
-                 font=("Arial", 12), bg="white").pack(pady=2)
-        tk.Label(frame, text=f"Dificuldade: {self.dados.get('dificuldade', 'Não informada')}",
-                 font=("Arial", 12), bg="white").pack(pady=2)
+        self.janela.protocol("WM_DELETE_WINDOW", self.fechar_janela)
 
-        tk.Label(frame, text="🧂 Ingredientes:", font=("Arial", 14, "bold"),
-                 bg="white", fg="#555").pack(pady=(15, 5))
-        tk.Message(frame, text=self.dados.get("ingredientes", "Sem ingredientes cadastrados."),
-                   width=600, bg="#FFF", font=("Arial", 11), relief="sunken", bd=1, padx=8, pady=5).pack(pady=3)
+        tk.Label(
+            frame,
+            text=dados["nome"],
+            font=("Arial", 18, "bold"),
+            bg="white",
+            fg="#333",
+        ).pack(pady=(15, 10))
 
-        tk.Label(frame, text="🍳 Modo de Preparo:", font=("Arial", 14, "bold"),
-                 bg="white", fg="#555").pack(pady=(15, 5))
-        tk.Message(frame, text=self.dados.get("modo_preparo", "Sem modo de preparo cadastrado."),
-                   width=600, bg="#FFF", font=("Arial", 11), relief="sunken", bd=1, padx=8, pady=5).pack(pady=3)
+        tk.Label(frame, text=f"Categoria: {dados['categoria']}", font=("Arial", 12), bg="white").pack(pady=3)
+        tk.Label(frame, text=f"Dificuldade: {dados['dificuldade']}", font=("Arial", 12), bg="white").pack(pady=3)
 
-        if self.dados.get("link_imagem"):
-            link_imagem = tk.Label(frame, text="📷 Ver Imagem", fg="blue", bg="white",
-                                   cursor="hand2", font=("Arial", 11, "underline"))
-            link_imagem.pack(pady=5)
-            link_imagem.bind("<Button-1>", lambda e: webbrowser.open(self.dados["link_imagem"]))
+        tk.Label(frame, text="🧂 Ingredientes", font=("Arial", 14, "bold"), bg="white", fg="#4CAF50").pack(pady=(15, 3))
+        self.texto(frame, dados["ingredientes"])
 
-        if self.dados.get("link_video"):
-            link_video = tk.Label(frame, text="🎬 Ver Vídeo", fg="blue", bg="white",
-                                  cursor="hand2", font=("Arial", 11, "underline"))
-            link_video.pack(pady=5)
-            link_video.bind("<Button-1>", lambda e: webbrowser.open(self.dados["link_video"]))
+        tk.Label(frame, text="👨‍🍳 Modo de Preparo", font=("Arial", 14, "bold"), bg="white", fg="#FF7043").pack(pady=(15, 3))
+        self.texto(frame, dados["modo_preparo"])
 
-        tk.Label(frame, text="⭐ Avalie esta receita:", font=("Arial", 14, "bold"), bg="white").pack(pady=(15, 10))
+        if dados["link_imagem"]:
+            btn_imagem = tk.Button(frame, text=f"📷 Abrir Imagem", fg="blue", bg="white", cursor="hand2", font=("Arial", 10, "underline"), relief="flat", borderwidth=0,activebackground="white", activeforeground="darkblue", command=lambda url=dados["link_imagem"]: self.abrir_link(url))
+            btn_imagem.pack(pady=3)
+
+        if dados["link_video"]:
+            btn_video = tk.Button(frame, text=f"🎬 Abrir Vídeo", fg="blue", bg="white", cursor="hand2", font=("Arial", 10, "underline"), relief="flat", borderwidth=0, activebackground="white", activeforeground="darkblue", command=lambda url=dados["link_video"]: self.abrir_link(url))
+            btn_video.pack(pady=3)
+
+        tk.Label(frame, text="Avalie esta receita:", font=("Arial", 13, "bold"), bg="white").pack(pady=10)
         self.nota = tk.StringVar(value="5")
 
-        notas = [("⭐ 1", "1"), ("⭐⭐ 2", "2"), ("⭐⭐⭐ 3", "3"), ("⭐⭐⭐⭐ 4", "4"), ("⭐⭐⭐⭐⭐ 5", "5")]
-        stars_frame = tk.Frame(frame, bg="white")
-        stars_frame.pack()
-        for texto, valor in notas:
-            tk.Radiobutton(stars_frame, text=texto, variable=self.nota, value=valor, bg="white",
-                           activebackground="white").pack(side="left", padx=5)
+        estrelas = [("⭐ 1", "1"), ("⭐⭐ 2", "2"), ("⭐⭐⭐ 3", "3"), ("⭐⭐⭐⭐ 4", "4"), ("⭐⭐⭐⭐⭐ 5", "5")]
+        estrelas_frame = tk.Frame(frame, bg="white")
+        estrelas_frame.pack(pady=3)
+        for texto, valor in estrelas:
+            tk.Radiobutton(estrelas_frame, text=texto, variable=self.nota, value=valor, bg="white", font=("Arial", 10)).pack(side="left", padx=5)
 
-        tk.Label(frame, text="📝 Comentário:", font=("Arial", 13), bg="white").pack(pady=(15, 5))
-        self.comentario = tk.Text(frame, height=5, width=70, relief="sunken", bd=1)
-        self.comentario.pack(pady=5)
+        tk.Label(frame, text="Comentário:", font=("Arial", 12), bg="white").pack(pady=5)
+        self.comentario = tk.Text(frame, height=4, width=65, font=("Arial", 10))
+        self.comentario.pack(pady=(0, 10))
 
-        tk.Button(frame, text="Enviar Avaliação ✅", bg="#4CAF50", fg="white",
-                  font=("Arial", 11, "bold"), relief="raised",
-                  command=self.enviar_avaliacao).pack(pady=15)
+        tk.Button(
+            frame, text="Enviar Avaliação", bg="#4CAF50", fg="white",
+            font=("Arial", 11, "bold"), relief="flat", bd=0,
+            activebackground="#45a049", padx=10, pady=5,
+            command=self.enviar_avaliacao
+        ).pack(pady=5)
+
+
+    def criar_gradiente(self, canvas, cor1, cor2):
+        """Cria um fundo gradiente vertical."""
+        largura = 750
+        altura = 650
+        steps = 100
+        r1, g1, b1 = canvas.winfo_rgb(cor1)
+        r2, g2, b2 = canvas.winfo_rgb(cor2)
+        r_ratio = (r2 - r1) / steps
+        g_ratio = (g2 - g1) / steps
+        b_ratio = (b2 - b1) / steps
+
+        for i in range(steps):
+            nr = int(r1 + (r_ratio * i))
+            ng = int(g1 + (g_ratio * i))
+            nb = int(b1 + (b_ratio * i))
+            cor = f'#{nr >> 8:02x}{ng >> 8:02x}{nb >> 8:02x}'
+            y1 = int(i * altura / steps)
+            y2 = int((i + 1) * altura / steps)
+            canvas.create_rectangle(0, y1, largura, y2, outline="", fill=cor)
+
+    def texto(self, frame, conteudo):
+        """Caixa de texto de leitura."""
+        caixa = tk.Text(frame, height=4, width=65, wrap="word", font=("Arial", 10), bg="#fafafa", relief="flat")
+        caixa.insert("1.0", conteudo)
+        caixa.configure(state="disabled")
+        caixa.pack(pady=3)
+
+    def abrir_link(self, url):
+        """Abre o link no navegador padrão."""
+        try:
+            print(f"Tentando abrir: {url}")  
+            
+            if not url.startswith(('http://', 'https://')):
+                url = 'https://' + url
+            
+            webbrowser.open_new_tab(url)
+            
+        except Exception as e:
+            messagebox.showerror("Erro", f"Não foi possível abrir o link: {e}") 
 
     def enviar_avaliacao(self):
+        """Registra avaliação."""
         nota = int(self.nota.get())
         comentario = self.comentario.get("1.0", "end-1c").strip()
 
         if not comentario:
-            messagebox.showwarning("Aviso", "Por favor, insira um comentário sobre a receita.")
+            messagebox.showwarning("Aviso", "Por favor, insira um comentário antes de enviar.")
             return
 
         try:
             self.controller.avaliar(self.id_usuario, self.id_receita, nota, comentario)
-            messagebox.showinfo("Sucesso", "✅ Avaliação registrada com sucesso!")
-            self.janela.destroy()
+            messagebox.showinfo("Sucesso", "Avaliação registrada com sucesso!")
+            self.fechar_janela()
         except Exception as e:
-            messagebox.showerror("Erro", f"Ocorreu um erro ao salvar avaliação:\n{e}")
+            messagebox.showerror("Erro", f"Erro ao salvar avaliação: {e}")
+
+    def fechar_janela(self):
+        """Fecha a janela e libera o controle."""
+        AvaliacaoView.janela_aberta = None
+        self.janela.destroy()

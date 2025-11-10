@@ -9,9 +9,13 @@ class Application:
     def __init__(self, master=None):
         self.master = master
         self.controller = ReceitaController()
-
         self.master.title("🍽️ Login - Sistema Sabores do Cerrado")
-        self.master.geometry("400x320")
+        # Tela cheia configurável
+        self.fullscreen = True
+        self.master.attributes("-fullscreen", self.fullscreen)
+        self.master.bind("<Escape>", self.toggle_fullscreen)
+
+        #  self.master.geometry("400x320")
         self.master.configure(bg="#FAFAFA")
         self.master.resizable(False, False)
 
@@ -46,6 +50,8 @@ class Application:
 
         self.mensagem = tk.Label(frame, text="", bg="white", font=("Arial", 10))
         self.mensagem.pack(pady=5)
+
+        master.bind('<Return>', lambda event: self.verificaSenha())
 
         tk.Label(
             self.master,
@@ -85,6 +91,16 @@ class Application:
         else:
             self.mensagem.config(fg="red", text="Usuário ou senha inválidos!")
             messagebox.showerror("Erro", "Credenciais incorretas!")
+
+    def toggle_fullscreen(self, event=None):
+        self.fullscreen = not self.fullscreen
+        if self.fullscreen:
+            self.master.attributes("-fullscreen", True)
+        else:
+            self.master.attributes("-fullscreen", False)
+            self.master.geometry("400x320")
+            self.master.update_idletasks()
+
 
 
 if __name__ == "__main__":
